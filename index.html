@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Ofícios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(30, 30, 50, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 20px;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #90cdf4;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #a0aec0;
+            margin-bottom: 5px;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .credits {
+            font-size: 0.8rem;
+            color: #4a5568;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #cbd5e0;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(45, 55, 72, 0.8);
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #90cdf4;
+            box-shadow: 0 0 0 3px rgba(144, 205, 244, 0.1);
+        }
+
+        .select-control {
+            background: rgba(45, 55, 72, 0.8);
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            color: #e2e8f0;
+            padding: 12px 15px;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .config-section {
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #4a5568;
+            display: none;
+        }
+
+        .config-section.show {
+            display: block;
+        }
+
+        .suggestions-container {
+            margin-top: 10px;
+        }
+
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .suggestion-btn {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-btn:hover {
+            background: linear-gradient(45deg, #3182ce, #2c5282);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .period-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .email-prazo-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(45deg, #38a169, #2f855a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #e53e3e, #c53030);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #c53030, #9c2626);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(45deg, #3182ce, #2c5282);
+        }
+
+        .resultado-section {
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid #4a5568;
+        }
+
+        .resultado-textarea {
+            width: 100%;
+            height: 400px;
+            padding: 20px;
+            background: #f7fafc;
+            color: #2d3748;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .resultado-textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .warning-text {
+            color: #f6ad55;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .help-text {
+            color: #a0aec0;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .ip-textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            background: rgba(45, 55, 72, 0.8);
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .period-group, .email-prazo-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">📄 Gerador de Ofícios</h1>
+            <p class="description">Criação automática de ofícios para requisição de dados cadastrais</p>
+            <p class="credits">Criado por Gustavo Godoy Alevado (gustavoalevado@pjc.mt.gov.br) e Fernando Gonçalves Ponce Corrêa da Costa (fernandocosta@pjc.mt.gov.br)</p>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="tipoRequisicao">Tipo de Requisição:</label>
+            <select id="tipoRequisicao" class="select-control">
+                <option value="">Escolha um tipo de requisição...</option>
+                <option value="telefonica">Operadoras Telefônicas</option>
+                <option value="internet">Provedores de Internet</option>
+                <option value="social">Redes Sociais</option>
+                <option value="servicos">Provedores de Serviços</option>
+                <option value="hospedagem">Servidores de Hospedagem</option>
+                <option value="financeira">Instituições Financeiras</option>
+                <option value="cripto">Criptoativos</option>
+            </select>
+        </div>
+
+        <div id="configSection" class="config-section">
+            <div class="form-group">
+                <label class="form-label" for="tipoProcedimento">Tipo de Procedimento:</label>
+                <select id="tipoProcedimento" class="select-control">
+                    <option value="">Selecione o tipo...</option>
+                    <option value="IP">IP</option>
+                    <option value="AIP">AIP</option>
+                    <option value="TCO">TCO</option>
+                    <option value="ATP">ATP</option>
+                    <option value="AI">AI</option>
+                    <option value="BOC">BOC</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="numeroProcedimento">Número do procedimento:</label>
+                <input type="text" id="numeroProcedimento" class="form-control" placeholder="Ex: 123/2025">
+                <p class="help-text">Digite apenas o número do procedimento (ex: 123/2025)</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="empresa">Nome da Empresa/Instituição:</label>
+                <input type="text" id="empresa" class="form-control" placeholder="Digite o nome da empresa...">
+                <div id="suggestionsContainer" class="suggestions-container"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="identificador">Identificador de Busca:</label>
+                <select id="identificador" class="select-control">
+                    <option value="">Selecione...</option>
+                </select>
+            </div>
+
+            <div id="outrosContainer" class="form-group hidden">
+                <label class="form-label" for="identificadorCustomizado">Especifique o Identificador:</label>
+                <input type="text" id="identificadorCustomizado" class="form-control" placeholder="Ex: Número da conta, ID do usuário, etc.">
+                <p class="warning-text">⚠️ Importante: Indique primeiro qual tipo de identificador antes de inserir o valor.</p>
+            </div>
+
+            <div id="ipContainer" class="form-group hidden">
+                <label class="form-label" for="listaIps">Lista de IPs (um por linha):</label>
+                <textarea id="listaIps" class="ip-textarea" placeholder="192.168.1.1, 01/01/2025, 14:30, UTC-3"></textarea>
+                <p class="help-text">Formato: IP, data, hora, UTC (separados por vírgula ou espaço). Ex: 192.168.1.1, 01/01/2025, 14:30, UTC-3</p>
+            </div>
+
+            <div id="valorContainer" class="form-group">
+                <label class="form-label" for="valor">Valor do Identificador:</label>
+                <input type="text" id="valor" class="form-control" placeholder="Digite o valor do identificador...">
+            </div>
+
+            <div id="periodoContainer" class="form-group hidden">
+                <label class="form-label">Período de Busca:</label>
+                <div class="period-group">
+                    <div>
+                        <label class="form-label" for="periodoInicio">Início:</label>
+                        <input type="text" id="periodoInicio" class="form-control" placeholder="dd/mm/aaaa">
+                    </div>
+                    <div>
+                        <label class="form-label" for="periodoFim">Fim:</label>
+                        <input type="text" id="periodoFim" class="form-control" placeholder="dd/mm/aaaa">
+                    </div>
+                </div>
+                <p class="help-text">(formato: dd/mm/aaaa)</p>
+            </div>
+
+            <div class="email-prazo-group">
+                <div class="form-group">
+                    <label class="form-label" for="email">E-mail para Resposta:</label>
+                    <input type="email" id="email" class="form-control" placeholder="seu.email@pjc.mt.gov.br">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="prazo">Prazo:</label>
+                    <input type="text" id="prazo" class="form-control" value="" placeholder="Ex: 15 dias úteis, 72 horas, 10 dias corridos">
+                    <p class="help-text">Especifique o prazo desejado (dias úteis, corridos, horas, etc.)</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button id="btnGerar" class="btn">✅ Gerar Ofício</button>
+                <button id="btnLimparConfig" class="btn btn-secondary">🗑️ Limpar Configuração</button>
+            </div>
+        </div>
+
+        <div class="resultado-section">
+            <div class="form-group">
+                <label class="form-label" for="nomeEmpresa">Nome da Empresa/Instituição:</label>
+                <input type="text" id="nomeEmpresa" class="form-control" readonly placeholder="O nome da empresa aparecerá aqui após gerar o ofício...">
+                <p class="help-text">Colar o texto no campo 'Destino:' do GEIA</p>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button id="btnCopiarEmpresa" class="btn btn-info">📋 Copiar Nome da Empresa</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="tituloOficio">Assunto do ofício:</label>
+                <input type="text" id="tituloOficio" class="form-control" readonly placeholder="O assunto aparecerá aqui após gerar o ofício...">
+                <p class="help-text">Colar o texto no campo 'Assunto:' do GEIA</p>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button id="btnCopiarTitulo" class="btn btn-info">📋 Copiar Assunto</button>
+                </div>
+            </div>
+            
+            <label class="form-label" for="resultadoTexto">Ofício Gerado:</label>
+            <textarea id="resultadoTexto" class="resultado-textarea" readonly placeholder="O ofício gerado aparecerá aqui..."></textarea>
+            
+            <div class="btn-group">
+                <button id="btnCopiar" class="btn btn-info">📋 Copiar Texto</button>
+                <button id="btnLimpar" class="btn btn-secondary">🗑️ Limpar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados das empresas e identificadores (MODIFICADO - alterações nos nomes das empresas)
+        const empresasSugeridas = {
+            'telefonica': ['VIVO S/A', 'CLARO S/A', 'TIM S/A', 'OI S/A'],
+            'internet': ['NET VIRTUA', 'VIVO FIBRA', 'OI FIBRA', 'TIM LIVE', 'CLARO NET', 'COPEL TELECOM'],
+            'social': ['WhatsApp LLC', 'Meta Platforms Inc (Facebook e Instagram)', 'X CORP (Twitter)', 
+                       'GOOGLE Brasil Internet LTDA (YouTube)', 'TELEGRAM', 'TIKTOK', 'LINKEDIN', 'SNAPCHAT', 'DISCORD'],
+            'servicos': ['Apple Computer Brasil Ltda', 'Google Brasil Internet Ltda', 'MICROSOFT CORPORATION', 'VERIZON MEDIA (Yahoo)', 
+                         'DROPBOX INC', 'AMAZON WEB SERVICES', 'ADOBE INC', 'SPOTIFY', 'NETFLIX'],
+            'hospedagem': ['HOSTINGER', 'CLOUDFLARE', 'LOCAWEB', 'HOSTGATOR', 'TURBOCLOUD', 'KINGHOST', 
+                           'GODADDY', 'AMAZON WEB SERVICES (AWS)', 'DIGITALOCEAN', 'VULTR', 'ORACLE CLOUD'],
+            'financeira': ['BANCO DO BRASIL S/A', 'CAIXA ECONÔMICA FEDERAL', 'BANCO BRADESCO S/A', 
+                           'ITAÚ UNIBANCO S/A', 'BANCO SANTANDER BRASIL S/A', 'BANCO INTER S/A', 
+                           'NUBANK (NU PAGAMENTOS S/A)', 'BANCO C6 S/A', 'BANCO ORIGINAL S/A', 
+                           'BANCO PAN S/A', 'MERCADO PAGO', 'PIC PAY'],
+            'cripto': ['BINANCE', 'COINBASE', 'MERCADO BITCOIN', 'OKX', 'BYBIT', 'KRAKEN', 
+                       'BITGET', 'KUCOIN', 'GATE.IO', 'HUOBI', 'CRYPTO.COM', 'FOXBIT', 
+                       'BITSO', 'BISCOINT', 'BITPREÇO', 'BLOCKCHAIN.COM']
+        };
+
+        const identificadores = {
+            'telefonica': ['Telefone', 'CPF', 'IMEI', 'OUTROS'],
+            'internet': ['CPF', 'IP', 'OUTROS'],
+            'social': ['E-mail', 'Telefone', 'Username', 'UserID', 'URL do perfil', 'OUTROS'],
+            'servicos': ['CPF', 'E-mail', 'Telefone', 'ID da conta/usuário', 'Número de dispositivo (IMEI, Serial Number)', 'OUTROS'],
+            'hospedagem': ['CPF', 'E-mail', 'Domínio/URL', 'IP do servidor', 'ID da conta/usuário', 'OUTROS'],
+            'financeira': ['CPF/CNPJ', 'Conta corrente/poupança', 'IP de acesso', 'Número do Cartão de crédito/débito', 'PIX (chave)', 'Agência e conta', 'OUTROS'],
+            'cripto': ['CPF/CNPJ', 'E-mail', 'Telefone', 'Endereço de carteira (wallet)', 'ID da conta/usuário', 'Hash da transação', 'OUTROS']
+        };
+
+        const tiposRequisicao = {
+            'telefonica': 'Operadoras Telefônicas',
+            'internet': 'Provedores de Internet',
+            'social': 'Redes Sociais',
+            'servicos': 'Provedores de Serviços',
+            'hospedagem': 'Servidores de Hospedagem',
+            'financeira': 'Instituições Financeiras',
+            'cripto': 'Criptoativos'
+        };
+
+        // Elementos DOM
+        const tipoSelect = document.getElementById('tipoRequisicao');
+        const configSection = document.getElementById('configSection');
+        const empresaInput = document.getElementById('empresa');
+        const suggestionsContainer = document.getElementById('suggestionsContainer');
+        const identificadorSelect = document.getElementById('identificador');
+        const outrosContainer = document.getElementById('outrosContainer');
+        const ipContainer = document.getElementById('ipContainer');
+        const valorContainer = document.getElementById('valorContainer');
+        const periodoContainer = document.getElementById('periodoContainer');
+        const resultadoTextarea = document.getElementById('resultadoTexto');
+
+        // Função para formatação automática de data
+        function formatarData(event) {
+            let input = event.target;
+            let valor = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            
+            // Limita a 8 dígitos (ddmmaaaa)
+            if (valor.length > 8) {
+                valor = valor.substring(0, 8);
+            }
+            
+            // Formatar com barras
+            let valorFormatado = '';
+            if (valor.length > 0) {
+                valorFormatado = valor.substring(0, 2);
+                if (valor.length >= 3) {
+                    valorFormatado += '/' + valor.substring(2, 4);
+                }
+                if (valor.length >= 5) {
+                    valorFormatado += '/' + valor.substring(4, 8);
+                }
+            }
+            
+            input.value = valorFormatado;
+        }
+
+        // Event Listeners
+        tipoSelect.addEventListener('change', onTipoSelected);
+        identificadorSelect.addEventListener('change', onIdentificadorSelected);
+        document.getElementById('btnGerar').addEventListener('click', gerarOficio);
+        document.getElementById('btnCopiar').addEventListener('click', copiarTexto);
+        document.getElementById('btnLimpar').addEventListener('click', limparResultado);
+        document.getElementById('btnLimparConfig').addEventListener('click', limparConfig);
+        document.getElementById('btnCopiarTitulo').addEventListener('click', copiarTitulo);
+        document.getElementById('btnCopiarEmpresa').addEventListener('click', copiarEmpresa);
+        
+        // Adicionar formatação automática de data aos campos específicos
+        const periodoInicio = document.getElementById('periodoInicio');
+        const periodoFim = document.getElementById('periodoFim');
+        
+        periodoInicio.addEventListener('input', formatarData);
+        periodoInicio.addEventListener('keyup', formatarData);
+        periodoFim.addEventListener('input', formatarData);
+        periodoFim.addEventListener('keyup', formatarData);
+
+        function onTipoSelected() {
+            const tipoSelecionado = tipoSelect.value;
+            
+            if (tipoSelecionado && tipoSelecionado !== "Escolha um tipo de requisição...") {
+                configSection.classList.add('show');
+                
+                // Atualizar identificadores
+                const identificadorOptions = identificadores[tipoSelecionado] || [];
+                identificadorSelect.innerHTML = '<option value="">Selecione...</option>';
+                identificadorOptions.forEach(id => {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = id;
+                    identificadorSelect.appendChild(option);
+                });
+                
+                // Atualizar sugestões de empresas
+                atualizarSugestoesEmpresas(tipoSelecionado);
+                
+                // Mostrar/ocultar período baseado no tipo (EXATAMENTE como no Python)
+                if (['telefonica', 'social', 'servicos'].includes(tipoSelecionado)) {
+                    periodoContainer.classList.remove('hidden');
+                } else {
+                    periodoContainer.classList.add('hidden');
+                }
+            } else {
+                configSection.classList.remove('show');
+            }
+        }
+
+        function atualizarSugestoesEmpresas(tipo) {
+            suggestionsContainer.innerHTML = '';
+            
+            if (tipo in empresasSugeridas) {
+                const suggestionsLabel = document.createElement('p');
+                suggestionsLabel.className = 'form-label';
+                suggestionsLabel.textContent = 'Sugestões:';
+                suggestionsContainer.appendChild(suggestionsLabel);
+                
+                const grid = document.createElement('div');
+                grid.className = 'suggestions-grid';
+                
+                // Limitar a 8 sugestões como no Python
+                empresasSugeridas[tipo].slice(0, 8).forEach(empresa => {
+                    const btn = document.createElement('button');
+                    btn.className = 'suggestion-btn';
+                    btn.textContent = empresa;
+                    btn.type = 'button';
+                    btn.addEventListener('click', () => {
+                        empresaInput.value = empresa;
+                    });
+                    grid.appendChild(btn);
+                });
+                
+                suggestionsContainer.appendChild(grid);
+            }
+        }
+
+        function onIdentificadorSelected() {
+            const identificador = identificadorSelect.value;
+            
+            if (identificador === 'OUTROS') {
+                outrosContainer.classList.remove('hidden');
+                valorContainer.classList.remove('hidden');
+            } else {
+                outrosContainer.classList.add('hidden');
+            }
+            
+            if (identificador === 'IP') {
+                ipContainer.classList.remove('hidden');
+                valorContainer.classList.add('hidden');
+            } else {
+                ipContainer.classList.add('hidden');
+                if (identificador !== 'OUTROS') {
+                    valorContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Processamento de IPs EXATAMENTE como no Python
+        function processarIps(listaIps) {
+            const ips = listaIps.split('\n').map(linha => linha.trim()).filter(linha => linha);
+            
+            if (ips.length === 1) {
+                const linha = ips[0].trim();
+                const partes = linha.split(/[,\s]+/).map(p => p.trim()).filter(p => p);
+                
+                if (partes.length >= 4) {
+                    const [ip, data, hora, utc] = partes;
+                    return `${ip} em ${data} às ${hora} (${utc})`;
+                } else if (partes.length >= 3) {
+                    const [ip, data, hora] = partes;
+                    return `${ip} em ${data} às ${hora} (UTC-3)`;
+                } else {
+                    return linha;
+                }
+            } else {
+                const ipsFormatados = ips.map(linha => {
+                    const linhaLimpa = linha.trim();
+                    const partes = linhaLimpa.split(/[,\s]+/).map(p => p.trim()).filter(p => p);
+                    
+                    if (partes.length >= 4) {
+                        const [ip, data, hora, utc] = partes;
+                        return `${ip} em ${data} às ${hora} (${utc})`;
+                    } else if (partes.length >= 3) {
+                        const [ip, data, hora] = partes;
+                        return `${ip} em ${data} às ${hora} (UTC-3)`;
+                    } else {
+                        return linhaLimpa;
+                    }
+                });
+                
+                return ipsFormatados.join('\n');
+            }
+        }
+
+        // Geração do texto do ofício MODIFICADO
+        function gerarTextoOficio(tipoKey, identificadorTexto) {
+            const identificador = identificadorSelect.value;
+            const valor = document.getElementById('valor').value;
+            const periodoInicio = document.getElementById('periodoInicio').value.trim();
+            const periodoFim = document.getElementById('periodoFim').value.trim();
+            const email = document.getElementById('email').value;
+            const prazo = document.getElementById('prazo').value.trim();
+            const tipoProcedimento = document.getElementById('tipoProcedimento').value.trim();
+            const numeroProcedimento = document.getElementById('numeroProcedimento').value.trim();
+            
+            let textoBase = "";
+            let clausulaPreservacao = "";
+            let periodoTexto = "";
+            let prazoTexto = "";
+            
+            // Texto base comum com procedimento incluído
+            const textoInicial = `Visando instruir o ${tipoProcedimento} nº ${numeroProcedimento}, na qualidade de Delegado(a) de Polícia Civil, no exercício das atribuições que me conferem os art. 144, § 4º, da CF c/c art. 2º, §2º, da Lei 12.830/2013, e com fundamento nos arts. 10, §3º e 15, da Lei 12.965/2014 c/c art. 17-B da Lei 9.613/98 e art. 15 da Lei 12.850/2013`;
+            
+            if (tipoKey === 'telefonica') {
+                if (identificador === 'Telefone') {
+                    textoBase = `${textoInicial}, requisito os dados cadastrais vinculados ao terminal telefônico: ${valor}`;
+                    periodoTexto = (periodoInicio && periodoFim) ? `, no período de ${periodoInicio} a ${periodoFim}` : "";
+                    prazoTexto = `, bem como os respectivos IMEIs habilitados, no prazo de ${prazo}.`;
+                } else if (identificador === 'CPF') {
+                    textoBase = `${textoInicial}, requisito os dados cadastrais vinculados ao CPF ${valor}`;
+                    periodoTexto = (periodoInicio && periodoFim) ? `, no período de ${periodoInicio} a ${periodoFim}` : "";
+                    prazoTexto = `, terminais telefônicos cadastrados no CPF e IMEIs habilitados, no prazo de ${prazo}.`;
+                } else if (identificador === 'IMEI') {
+                    textoBase = `${textoInicial}, requisito informações referentes aos terminais telefônicos vinculados ao IMEI ${valor}, bem como os dados cadastrais do titular`;
+                    periodoTexto = (periodoInicio && periodoFim) ? `, no período de ${periodoInicio} a ${periodoFim}` : "";
+                    prazoTexto = `, no prazo de ${prazo}.`;
+                } else if (identificador === 'OUTROS') {
+                    textoBase = `${textoInicial}, requisito os dados cadastrais vinculados ao identificador de busca: ${identificadorTexto}`;
+                    periodoTexto = (periodoInicio && periodoFim) ? `, no período de ${periodoInicio} a ${periodoFim}` : "";
+                    prazoTexto = `, no prazo de ${prazo}.`;
+                }
+            } else if (tipoKey === 'internet') {
+                if (identificador === 'IP') {
+                    textoBase = `${textoInicial}, requisito, no prazo de ${prazo}, os dados cadastrais vinculados ao identificador de busca:\n\n${identificadorTexto}.`;
+                } else {
+                    textoBase = `${textoInicial}, requisito, no prazo de ${prazo}, os dados cadastrais vinculados ao identificador de busca: ${identificadorTexto}.`;
+                }
+                
+                clausulaPreservacao = `\n\nAdicionalmente, requisito, com base no art. 15, § 1º, da Lei nº 12.965/2014, a preservação do conteúdo das comunicações privadas e de todos os registros de conexão e de acesso a aplicações de internet relacionados ao(s) identificador(es) acima mencionado(s), pelo período de 1 (um) ano, a partir da data desta comunicação, a fim de viabilizar futura ordem judicial para acesso ao seu conteúdo.`;
+                periodoTexto = "";
+                prazoTexto = "";
+                
+            } else if (tipoKey === 'social') {
+                textoBase = `${textoInicial}, venho requisitar os dados cadastrais vinculados ao identificador: ${identificadorTexto}`;
+                clausulaPreservacao = `\n\nAdicionalmente, requisito, com base no art. 15, § 1º, da Lei nº 12.965/2014, a preservação de dados e de todos os registros de conexão e de acesso a aplicações de internet relacionados ao(s) identificador(es) acima mencionado(s), pelo período de 1 (um) ano, a partir da data desta comunicação, a fim de viabilizar futura ordem judicial para acesso ao seu conteúdo.`;
+                periodoTexto = (periodoInicio && periodoFim) ? `, no período de ${periodoInicio} a ${periodoFim}` : "";
+                prazoTexto = `, no prazo de ${prazo}.`;
+                
+            } else if (tipoKey === 'servicos') {
+                textoBase = `${textoInicial}, venho requisitar os dados cadastrais vinculados ao identificador de busca: ${identificadorTexto}`;
+                clausulaPreservacao = `\n\nAdicionalmente, requisito, com base no art. 15, § 1º, da Lei nº 12.965/2014, a preservação de dados e de todos os registros de conexão e de acesso a aplicações de internet relacionados ao(s) identificador(es) acima mencionado(s), pelo período de 1 (um) ano, a partir da data desta comunicação, a fim de viabilizar futura ordem judicial para acesso ao seu conteúdo.`;
+                periodoTexto = (periodoInicio && periodoFim) ? `, no período de ${periodoInicio} a ${periodoFim}` : "";
+                prazoTexto = `, no prazo de ${prazo}.`;
+                
+            } else if (tipoKey === 'hospedagem') {
+                textoBase = `${textoInicial}, venho requisitar os dados cadastrais vinculados ao identificador: ${identificadorTexto}, em especial nome completo, filiação, telefone, endereço, estado civil, profissão, e-mail, e-mail de recuperação, data de nascimento, número de telefone celular e IMEI, ID DEVICE, fotos enviadas no ato da abertura da conta/cadastro e outros disponíveis, bem como informar os produtos contratados`;
+                clausulaPreservacao = `\n\nAdicionalmente, requisito, com base no art. 15, § 1º, da Lei nº 12.965/2014, a preservação de dados e de todos os registros de conexão e de acesso a aplicações de internet relacionados ao(s) identificador(es) acima mencionado(s), pelo período de 1 (um) ano, a partir da data desta comunicação, a fim de viabilizar futura ordem judicial para acesso ao seu conteúdo.`;
+                periodoTexto = "";
+                prazoTexto = `, no prazo de ${prazo}.`;
+                
+            } else if (tipoKey === 'financeira') {
+                // Para financeira, usar fundamento específico (sem MCI)
+                const textoInicialFinanceira = `Visando instruir o ${tipoProcedimento} nº ${numeroProcedimento}, na qualidade de Delegado(a) de Polícia Civil, no exercício das atribuições que me conferem os art. 144, § 4º, da CF c/c art. 2º, §2º, da Lei 12.830/2013, e com fundamento no art. 17-B da Lei 9.613/98`;
+                textoBase = `${textoInicialFinanceira}, venho requisitar os dados cadastrais vinculados ao identificador: ${identificadorTexto}`;
+                clausulaPreservacao = `\n\nA resposta deverá conter os seguintes dados: documentos de identificação, filiação, dados de contato (telefone e e-mail) informados, data de abertura e endereço do titular; selfie (foto do próprio rosto) e cópia (digitalizada) dos documentos apresentados; dados do dispositivo (Protocolo de Internet - IP, atributos do dispositivo e dados de geolocalização) utilizados na criação da conta.\n\nAdicionalmente, requisito, com base no art. 15, § 1º, da Lei nº 12.965/2014, a preservação de dados e de todos os registros de conexão e de acesso a aplicações de internet relacionados ao(s) identificador(es) acima mencionado(s), pelo período de 1 (um) ano, a partir da data desta comunicação, a fim de viabilizar futura ordem judicial para acesso ao seu conteúdo.`;
+                periodoTexto = "";
+                prazoTexto = `, no prazo de ${prazo}.`;
+                
+            } else if (tipoKey === 'cripto') {
+                // Para cripto, usar fundamento específico (sem MCI)
+                const textoInicialCripto = `Visando instruir o ${tipoProcedimento} nº ${numeroProcedimento}, na qualidade de Delegado(a) de Polícia Civil, no exercício das atribuições que me conferem os art. 144, § 4º, da CF c/c art. 2º, §2º, da Lei 12.830/2013, e com fundamento no art. 17-B da Lei 9.613/98`;
+                textoBase = `${textoInicialCripto}, venho requisitar os dados cadastrais vinculados ao identificador: ${identificadorTexto}`;
+                clausulaPreservacao = `\n\nOs dados cadastrais devem contemplar o nome completo, filiação, endereço, estado civil, profissão, e-mail, e-mail de recuperação, data de nascimento, foto selfie eventualmente enviada, documentos completo do KYC (conheça seu cliente), número de telefone celular fornecido no ato da abertura da conta/cadastro e outros dados disponíveis.\n\nAdicionalmente, requisito, com base no art. 15, § 1º, da Lei nº 12.965/2014, a preservação de dados e de todos os registros de conexão e de acesso a aplicações de internet relacionados ao(s) identificador(es) acima mencionado(s), pelo período de 1 (um) ano, a partir da data desta comunicação, a fim de viabilizar futura ordem judicial para acesso ao seu conteúdo.`;
+                periodoTexto = "";
+                prazoTexto = `, no prazo de ${prazo}.`;
+            }
+            
+            const oficio = `${textoBase}${periodoTexto}${prazoTexto}${clausulaPreservacao}\n\nA investigação policial é sigilosa (art. 20 CPP) e, por isso, o usuário não deve ser notificado acerca das requisições policiais.\n\nPor fim, solicito que a resposta seja encaminhada para o e-mail ${email}.\n\nAtenciosamente,`;
+            
+            return oficio;
+        }
+
+        function gerarOficio() {
+            // Validar campos obrigatórios
+            const tipoProcedimento = document.getElementById('tipoProcedimento').value.trim();
+            const numeroProcedimento = document.getElementById('numeroProcedimento').value.trim();
+            const empresa = document.getElementById('empresa').value.trim();
+            const identificador = identificadorSelect.value;
+            const email = document.getElementById('email').value.trim();
+            const prazo = document.getElementById('prazo').value.trim();
+            
+            if (!tipoProcedimento || tipoProcedimento === 'Selecione o tipo...') {
+                alert('Tipo de procedimento é obrigatório!');
+                return;
+            }
+            
+            if (!numeroProcedimento) {
+                alert('Número do procedimento é obrigatório!');
+                return;
+            }
+            
+            if (!empresa) {
+                alert('Nome da empresa é obrigatório!');
+                return;
+            }
+            
+            if (!identificador || identificador === 'Selecione...') {
+                alert('Identificador de busca é obrigatório!');
+                return;
+            }
+            
+            if (!email) {
+                alert('E-mail para resposta é obrigatório!');
+                return;
+            }
+            
+            if (!prazo) {
+                alert('Prazo é obrigatório!');
+                return;
+            }
+            
+            // Validações específicas
+            let identificadorTexto = "";
+            
+            if (identificador === 'IP') {
+                const listaIps = document.getElementById('listaIps').value.trim();
+                if (!listaIps) {
+                    alert('Lista de IPs é obrigatória!');
+                    return;
+                }
+                identificadorTexto = processarIps(listaIps);
+            } else if (identificador === 'OUTROS') {
+                const identificadorCustomizado = document.getElementById('identificadorCustomizado').value.trim();
+                const valor = document.getElementById('valor').value.trim();
+                if (!identificadorCustomizado) {
+                    alert('Especificação do identificador é obrigatória!');
+                    return;
+                }
+                if (!valor) {
+                    alert('Valor do identificador é obrigatório!');
+                    return;
+                }
+                identificadorTexto = `${identificadorCustomizado}: ${valor}`;
+            } else {
+                const valor = document.getElementById('valor').value.trim();
+                if (!valor) {
+                    alert('Valor do identificador é obrigatório!');
+                    return;
+                }
+                identificadorTexto = `${identificador}: ${valor}`;
+            }
+            
+            try {
+                const tipoKey = tipoSelect.value;
+                const oficio = gerarTextoOficio(tipoKey, identificadorTexto);
+                
+                resultadoTextarea.value = oficio;
+                
+                // Gerar título para cópia
+                const titulo = `REQUISIÇÃO DE INFORMAÇÕES - ${tipoProcedimento} nº ${numeroProcedimento}`;
+                document.getElementById('tituloOficio').value = titulo;
+                
+                // Preencher o nome da empresa no novo campo
+                document.getElementById('nomeEmpresa').value = empresa;
+                
+                alert('Ofício gerado com sucesso!');
+            } catch (error) {
+                alert(`Erro ao gerar ofício: ${error.message}`);
+            }
+        }
+
+        function copiarTexto() {
+            const texto = resultadoTextarea.value.trim();
+            if (texto) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    alert('Texto copiado para a área de transferência!');
+                }).catch(err => {
+                    // Fallback para navegadores mais antigos
+                    resultadoTextarea.select();
+                    document.execCommand('copy');
+                    alert('Texto copiado para a área de transferência!');
+                });
+            } else {
+                alert('Não há texto para copiar!');
+            }
+        }
+
+        function copiarTitulo() {
+            const titulo = document.getElementById('tituloOficio').value.trim();
+            if (titulo) {
+                navigator.clipboard.writeText(titulo).then(() => {
+                    alert('Assunto copiado para a área de transferência!');
+                }).catch(err => {
+                    // Fallback para navegadores mais antigos
+                    const tituloField = document.getElementById('tituloOficio');
+                    tituloField.select();
+                    document.execCommand('copy');
+                    alert('Assunto copiado para a área de transferência!');
+                });
+            } else {
+                alert('Não há assunto para copiar! Gere um ofício primeiro.');
+            }
+        }
+
+        function copiarEmpresa() {
+            const empresa = document.getElementById('nomeEmpresa').value.trim();
+            if (empresa) {
+                navigator.clipboard.writeText(empresa).then(() => {
+                    alert('Nome da empresa copiado para a área de transferência!');
+                }).catch(err => {
+                    // Fallback para navegadores mais antigos
+                    const empresaField = document.getElementById('nomeEmpresa');
+                    empresaField.select();
+                    document.execCommand('copy');
+                    alert('Nome da empresa copiado para a área de transferência!');
+                });
+            } else {
+                alert('Não há nome da empresa para copiar! Gere um ofício primeiro.');
+            }
+        }
+
+        function limparResultado() {
+            resultadoTextarea.value = '';
+            document.getElementById('tituloOficio').value = '';
+            document.getElementById('nomeEmpresa').value = '';
+        }
+
+        function limparConfig() {
+            document.getElementById('tipoProcedimento').value = '';
+            document.getElementById('numeroProcedimento').value = '';
+            document.getElementById('empresa').value = '';
+            identificadorSelect.value = '';
+            document.getElementById('identificadorCustomizado').value = '';
+            document.getElementById('valor').value = '';
+            document.getElementById('listaIps').value = '';
+            document.getElementById('periodoInicio').value = '';
+            document.getElementById('periodoFim').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('prazo').value = '';
+            
+            // Reset do combo de identificadores
+            identificadorSelect.innerHTML = '<option value="">Selecione...</option>';
+            
+            // Ocultar containers específicos
+            outrosContainer.classList.add('hidden');
+            ipContainer.classList.add('hidden');
+            valorContainer.classList.remove('hidden');
+            
+            // Limpar sugestões
+            suggestionsContainer.innerHTML = '';
+        }
+    </script>
+</body>
+</html>
